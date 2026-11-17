@@ -1,0 +1,12 @@
+{
+  "Author": "JohnnyP55688",
+  "Name": "肝武助手 RelicFlow",
+  "InternalName": "RelicFlowCN",
+  "Punchline": "国服遗物武器进度、步骤与下一目标助手",
+  "Description": "集中管理古武、魂武、优雷卡与义军武器的制作进度。首个测试版提供中文清单、手动进度和下一步推荐，不会自动战斗。",
+  "ApplicableVersion": "any",
+  "RepoUrl": "https://github.com/JohnnyP55688/RelicFlow-CN",
+  "Tags": [ "relic", "weapon", "progress", "CN" ],
+  "LoadRequiredState": 0,
+  "CanUnloadAsync": false
+}
