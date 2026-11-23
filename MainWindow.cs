@@ -21,7 +21,7 @@ public sealed class MainWindow(Plugin plugin) : Window("肝武助手 RelicFlow##
         var config = plugin.Configuration;
         var selected = RelicCatalog.Find(config.SelectedSeriesId);
 
-        ImGui.TextColored(new Vector4(0.35f, 0.85f, 0.65f, 1f), "免费核心测试版 0.3.0");
+        ImGui.TextColored(new Vector4(0.35f, 0.85f, 0.65f, 1f), "免费核心测试版 0.4.0");
         ImGui.SameLine();
         ImGui.TextDisabled("当前版本只管理进度，不会自动操作角色");
         ImGui.Separator();
@@ -48,6 +48,12 @@ public sealed class MainWindow(Plugin plugin) : Window("肝武助手 RelicFlow##
         {
             ImGui.TextDisabled("任务读取模块暂不可用，继续使用 RelicFlow 手动清单。");
         }
+        ImGui.Separator();
+
+        ImGui.Text("插件联动状态");
+        DrawPluginStatus("FATE Autopilot", plugin.ExternalPlugins.Fate());
+        DrawPluginStatus("BozjaBuddyReborn-CN", plugin.ExternalPlugins.Bozja());
+        ImGui.TextDisabled("当前只读取运行状态，不会从 RelicFlow 启动或停止自动化。");
         ImGui.Separator();
 
         ImGui.Text("追踪分类");
@@ -140,5 +146,21 @@ public sealed class MainWindow(Plugin plugin) : Window("肝武助手 RelicFlow##
         }
         ImGui.SameLine();
         ImGui.TextDisabled("命令：/relicflow 或 /肝武助手");
+    }
+
+    private static void DrawPluginStatus(string name, PluginStatus status)
+    {
+        if (!status.Available)
+        {
+            ImGui.TextDisabled($"{name}：未连接（需要支持 RelicFlow 接口的新版）");
+            return;
+        }
+
+        var color = status.Running
+            ? new Vector4(0.35f, 0.85f, 0.65f, 1f)
+            : new Vector4(0.7f, 0.7f, 0.7f, 1f);
+        ImGui.TextColored(color, $"{name}：{(status.Running ? "运行中" : "已连接／空闲")} · {status.Phase}");
+        if (!string.IsNullOrWhiteSpace(status.Detail))
+            ImGui.TextDisabled(status.Detail);
     }
 }

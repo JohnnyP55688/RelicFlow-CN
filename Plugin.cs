@@ -14,6 +14,7 @@ public sealed class Plugin : IDalamudPlugin
 
     internal Configuration Configuration { get; }
     internal TsukimichiIpc Tsukimichi { get; }
+    internal ExternalPluginIpc ExternalPlugins { get; }
     private WindowSystem WindowSystem { get; } = new("RelicFlowCN");
     private MainWindow MainWindow { get; }
 
@@ -21,6 +22,7 @@ public sealed class Plugin : IDalamudPlugin
     {
         Configuration = PluginInterface.GetPluginConfig() as Configuration ?? new Configuration();
         Tsukimichi = new TsukimichiIpc(PluginInterface);
+        ExternalPlugins = new ExternalPluginIpc(PluginInterface);
         MainWindow = new MainWindow(this);
         WindowSystem.AddWindow(MainWindow);
         CommandManager.AddHandler("/relicflow", new CommandInfo(OnCommand) { HelpMessage = "打开肝武助手" });
