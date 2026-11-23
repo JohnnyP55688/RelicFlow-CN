@@ -21,7 +21,7 @@ public sealed class MainWindow(Plugin plugin) : Window("肝武助手 RelicFlow##
         var config = plugin.Configuration;
         var selected = RelicCatalog.Find(config.SelectedSeriesId);
 
-        ImGui.TextColored(new Vector4(0.35f, 0.85f, 0.65f, 1f), "免费核心测试版 0.4.0");
+        ImGui.TextColored(new Vector4(0.35f, 0.85f, 0.65f, 1f), "免费核心测试版 0.5.0");
         ImGui.SameLine();
         ImGui.TextDisabled("当前版本只管理进度，不会自动操作角色");
         ImGui.Separator();
@@ -53,6 +53,7 @@ public sealed class MainWindow(Plugin plugin) : Window("肝武助手 RelicFlow##
         ImGui.Text("插件联动状态");
         DrawPluginStatus("FATE Autopilot", plugin.ExternalPlugins.Fate());
         DrawPluginStatus("BozjaBuddyReborn-CN", plugin.ExternalPlugins.Bozja());
+        DrawPluginStatus("AutoDuty", plugin.ExternalPlugins.AutoDuty());
         ImGui.TextDisabled("当前只读取运行状态，不会从 RelicFlow 启动或停止自动化。");
         ImGui.Separator();
 
