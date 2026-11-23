@@ -16,6 +16,11 @@ public sealed class ExternalPluginIpc
     private readonly ICallGateSubscriber<bool> autoDutyNavigating;
     private readonly ICallGateSubscriber<bool> autoDutyLooping;
     private readonly ICallGateSubscriber<bool> autoDutyStopped;
+    private readonly ICallGateSubscriber<bool> questionableRunning;
+    private readonly ICallGateSubscriber<string?> questionableQuestId;
+    private readonly ICallGateSubscriber<string, bool> questionableStartSingleQuest;
+    private readonly ICallGateSubscriber<string, bool> questionableStop;
+    private readonly ICallGateSubscriber<object> autoDutyStop;
 
     public ExternalPluginIpc(IDalamudPluginInterface pi)
     {
@@ -30,6 +35,11 @@ public sealed class ExternalPluginIpc
         autoDutyNavigating = pi.GetIpcSubscriber<bool>("AutoDuty.IsNavigating");
         autoDutyLooping = pi.GetIpcSubscriber<bool>("AutoDuty.IsLooping");
         autoDutyStopped = pi.GetIpcSubscriber<bool>("AutoDuty.IsStopped");
+        autoDutyStop = pi.GetIpcSubscriber<object>("AutoDuty.Stop");
+        questionableRunning = pi.GetIpcSubscriber<bool>("Questionable.IsRunning");
+        questionableQuestId = pi.GetIpcSubscriber<string?>("Questionable.GetCurrentQuestId");
+        questionableStartSingleQuest = pi.GetIpcSubscriber<string, bool>("Questionable.StartSingleQuest");
+        questionableStop = pi.GetIpcSubscriber<string, bool>("Questionable.Stop");
     }
 
     public PluginStatus Fate() => Read(fateApi, fateRunning, fateStatus, fatePhase);
@@ -53,6 +63,35 @@ public sealed class ExternalPluginIpc
         {
             return PluginStatus.Unavailable;
         }
+    }
+
+    public PluginStatus Questionable()
+    {
+        try
+        {
+            var running = questionableRunning.InvokeFunc();
+            var questId = questionableQuestId.InvokeFunc();
+            var detail = string.IsNullOrWhiteSpace(questId)
+                ? "Questionable 已连接，目前没有选中的任务。"
+                : $"当前任务：{questId}";
+            return new PluginStatus(true, running, running ? "任务执行中" : "已连接／空闲", detail);
+        }
+        catch
+        {
+            return PluginStatus.Unavailable;
+        }
+    }
+
+    public bool StartQuestionableQuest(string questId)
+    {
+        try { return questionableStartSingleQuest.InvokeFunc(questId); }
+        catch { return false; }
+    }
+
+    public void StopAutomation()
+    {
+        try { questionableStop.InvokeFunc("RelicFlow emergency stop"); } catch { }
+        try { autoDutyStop.InvokeAction(); } catch { }
     }
 
     private static PluginStatus Read(

@@ -11,10 +11,12 @@ public sealed class Plugin : IDalamudPlugin
     [PluginService] internal static IDalamudPluginInterface PluginInterface { get; private set; } = null!;
     [PluginService] internal static ICommandManager CommandManager { get; private set; } = null!;
     [PluginService] internal static IPluginLog Log { get; private set; } = null!;
+    [PluginService] internal static IFramework Framework { get; private set; } = null!;
 
     internal Configuration Configuration { get; }
     internal TsukimichiIpc Tsukimichi { get; }
     internal ExternalPluginIpc ExternalPlugins { get; }
+    internal AutomationCoordinator Automation { get; }
     private WindowSystem WindowSystem { get; } = new("RelicFlowCN");
     private MainWindow MainWindow { get; }
 
@@ -23,6 +25,7 @@ public sealed class Plugin : IDalamudPlugin
         Configuration = PluginInterface.GetPluginConfig() as Configuration ?? new Configuration();
         Tsukimichi = new TsukimichiIpc(PluginInterface);
         ExternalPlugins = new ExternalPluginIpc(PluginInterface);
+        Automation = new AutomationCoordinator(this);
         MainWindow = new MainWindow(this);
         WindowSystem.AddWindow(MainWindow);
         CommandManager.AddHandler("/relicflow", new CommandInfo(OnCommand) { HelpMessage = "打开肝武助手" });
@@ -30,17 +33,20 @@ public sealed class Plugin : IDalamudPlugin
         PluginInterface.UiBuilder.Draw += WindowSystem.Draw;
         PluginInterface.UiBuilder.OpenMainUi += Toggle;
         PluginInterface.UiBuilder.OpenConfigUi += Toggle;
+        Framework.Update += OnFrameworkUpdate;
         Log.Information("RelicFlow CN 0.1.0 loaded.");
     }
 
     private void OnCommand(string command, string arguments) => Toggle();
     private void Toggle() => MainWindow.Toggle();
+    private void OnFrameworkUpdate(IFramework framework) => Automation.Tick();
 
     public void Dispose()
     {
         PluginInterface.UiBuilder.Draw -= WindowSystem.Draw;
         PluginInterface.UiBuilder.OpenMainUi -= Toggle;
         PluginInterface.UiBuilder.OpenConfigUi -= Toggle;
+        Framework.Update -= OnFrameworkUpdate;
         CommandManager.RemoveHandler("/relicflow");
         CommandManager.RemoveHandler("/肝武助手");
         WindowSystem.RemoveAllWindows();

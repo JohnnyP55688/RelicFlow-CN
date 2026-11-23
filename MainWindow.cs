@@ -21,7 +21,7 @@ public sealed class MainWindow(Plugin plugin) : Window("肝武助手 RelicFlow##
         var config = plugin.Configuration;
         var selected = RelicCatalog.Find(config.SelectedSeriesId);
 
-        ImGui.TextColored(new Vector4(0.35f, 0.85f, 0.65f, 1f), "免费核心测试版 0.5.0");
+        ImGui.TextColored(new Vector4(0.35f, 0.85f, 0.65f, 1f), "免费核心测试版 0.6.0");
         ImGui.SameLine();
         ImGui.TextDisabled("当前版本只管理进度，不会自动操作角色");
         ImGui.Separator();
@@ -54,7 +54,32 @@ public sealed class MainWindow(Plugin plugin) : Window("肝武助手 RelicFlow##
         DrawPluginStatus("FATE Autopilot", plugin.ExternalPlugins.Fate());
         DrawPluginStatus("BozjaBuddyReborn-CN", plugin.ExternalPlugins.Bozja());
         DrawPluginStatus("AutoDuty", plugin.ExternalPlugins.AutoDuty());
-        ImGui.TextDisabled("当前只读取运行状态，不会从 RelicFlow 启动或停止自动化。");
+        DrawPluginStatus("Questionable", plugin.ExternalPlugins.Questionable());
+        ImGui.TextDisabled("状态区只读取信息；下方循环必须由你在 RelicFlow 中明确启动。");
+        ImGui.Separator();
+
+        ImGui.Text("任务自动循环（测试）");
+        ImGui.SetNextItemWidth(-1);
+        var questQueue = config.QuestAutomationQueue;
+        if (ImGui.InputTextWithHint("##questQueue", "Questionable 任务 ID，用逗号分隔", ref questQueue, 1024))
+        {
+            config.QuestAutomationQueue = questQueue;
+            config.Save();
+        }
+        var repeat = config.RepeatAutomationQueue;
+        if (ImGui.Checkbox("完成队列后从头循环", ref repeat))
+        {
+            config.RepeatAutomationQueue = repeat;
+            config.Save();
+        }
+        if (!plugin.Automation.Running)
+        {
+            if (ImGui.Button("开始受控循环")) plugin.Automation.Start();
+        }
+        else if (ImGui.Button("停止全部联动")) plugin.Automation.Stop();
+        ImGui.SameLine();
+        ImGui.TextDisabled(plugin.Automation.Status);
+        ImGui.TextDisabled("一次只运行一个控制插件；Questionable 遇到副本时可自行交给 AutoDuty。");
         ImGui.Separator();
 
         ImGui.Text("追踪分类");
