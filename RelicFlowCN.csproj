@@ -5,9 +5,9 @@
     <LangVersion>latest</LangVersion>
     <AssemblyName>RelicFlowCN</AssemblyName>
     <RootNamespace>RelicFlowCN</RootNamespace>
-    <Version>0.6.0.0</Version>
-    <AssemblyVersion>0.6.0.0</AssemblyVersion>
-    <FileVersion>0.6.0.0</FileVersion>
+    <Version>0.6.1.0</Version>
+    <AssemblyVersion>0.6.1.0</AssemblyVersion>
+    <FileVersion>0.6.1.0</FileVersion>
   </PropertyGroup>
   <ItemGroup>
     <None Include="RelicFlowCN.json"><CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory></None>

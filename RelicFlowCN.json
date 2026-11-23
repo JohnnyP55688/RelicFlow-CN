@@ -3,7 +3,7 @@
   "Name": "肝武助手 RelicFlow",
   "InternalName": "RelicFlowCN",
   "Punchline": "国服遗物武器进度、步骤与下一目标助手",
-  "Description": "按战斗肝武、深层迷宫武器、制作采集工具三类管理 2.0 至 7.0 特殊装备进度，提供中文清单与下一步推荐，不会自动战斗。",
+  "Description": "按战斗肝武、深层迷宫武器、制作采集工具三类管理 2.0 至 7.0 特殊装备进度，提供中文清单、下一步推荐和外部插件只读状态，不包含任何自动操作。",
   "ApplicableVersion": "any",
   "RepoUrl": "https://github.com/JohnnyP55688/RelicFlow-CN",
   "Tags": [ "relic", "weapon", "progress", "CN" ],

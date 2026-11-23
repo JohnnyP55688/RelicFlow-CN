@@ -9,8 +9,6 @@ public sealed class Configuration : IPluginConfiguration
     public RelicCategory SelectedCategory { get; set; } = RelicCategory.Combat;
     public string SelectedSeriesId { get; set; } = "zodiac";
     public HashSet<string> CompletedSteps { get; set; } = [];
-    public string QuestAutomationQueue { get; set; } = string.Empty;
-    public bool RepeatAutomationQueue { get; set; }
 
     public void Save() => Plugin.PluginInterface.SavePluginConfig(this);
 }
