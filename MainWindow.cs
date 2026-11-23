@@ -21,7 +21,7 @@ public sealed class MainWindow(Plugin plugin) : Window("肝武助手 RelicFlow##
         var config = plugin.Configuration;
         var selected = RelicCatalog.Find(config.SelectedSeriesId);
 
-        ImGui.TextColored(new Vector4(0.35f, 0.85f, 0.65f, 1f), "免费核心测试版 0.2.0");
+        ImGui.TextColored(new Vector4(0.35f, 0.85f, 0.65f, 1f), "免费核心测试版 0.3.0");
         ImGui.SameLine();
         ImGui.TextDisabled("当前版本只管理进度，不会自动操作角色");
         ImGui.Separator();
@@ -50,13 +50,39 @@ public sealed class MainWindow(Plugin plugin) : Window("肝武助手 RelicFlow##
         }
         ImGui.Separator();
 
-        ImGui.Text("追踪武器线");
-        ImGui.SetNextItemWidth(280);
-        if (ImGui.BeginCombo("##series", $"{selected.Name} · {selected.Expansion}"))
+        ImGui.Text("追踪分类");
+        ImGui.SetNextItemWidth(220);
+        if (ImGui.BeginCombo("##category", RelicCatalog.CategoryName(config.SelectedCategory)))
         {
-            foreach (var series in RelicCatalog.Series)
+            foreach (var category in System.Enum.GetValues<RelicCategory>())
             {
-                if (ImGui.Selectable($"{series.Name} · {series.Expansion}", series.Id == selected.Id))
+                if (ImGui.Selectable(RelicCatalog.CategoryName(category), category == config.SelectedCategory))
+                {
+                    config.SelectedCategory = category;
+                    var first = RelicCatalog.ForCategory(category).First();
+                    config.SelectedSeriesId = first.Id;
+                    config.Save();
+                    selected = first;
+                }
+            }
+            ImGui.EndCombo();
+        }
+
+        if (selected.Category != config.SelectedCategory)
+        {
+            selected = RelicCatalog.ForCategory(config.SelectedCategory).First();
+            config.SelectedSeriesId = selected.Id;
+            config.Save();
+        }
+
+        ImGui.SameLine();
+        ImGui.Text("路线");
+        ImGui.SetNextItemWidth(280);
+        if (ImGui.BeginCombo("##series", $"{selected.Name} · {selected.Version}"))
+        {
+            foreach (var series in RelicCatalog.ForCategory(config.SelectedCategory))
+            {
+                if (ImGui.Selectable($"{series.Name} · {series.Version}", series.Id == selected.Id))
                 {
                     config.SelectedSeriesId = series.Id;
                     config.Save();
@@ -78,6 +104,8 @@ public sealed class MainWindow(Plugin plugin) : Window("肝武助手 RelicFlow##
         {
             ImGui.TextWrapped($"{next.Title}  ·  {next.Group}");
             ImGui.TextDisabled(next.Detail);
+            if (!string.IsNullOrWhiteSpace(next.WikiPage))
+                ImGui.TextDisabled($"资料来源：FF14 灰机 Wiki · {next.WikiPage}");
         }
 
         ImGui.Separator();
@@ -97,6 +125,8 @@ public sealed class MainWindow(Plugin plugin) : Window("肝武助手 RelicFlow##
                 ImGui.TextUnformatted($"[{step.Group}] {step.Title}");
                 ImGui.Indent(28);
                 ImGui.TextDisabled(step.Detail);
+                if (!string.IsNullOrWhiteSpace(step.WikiPage))
+                    ImGui.TextDisabled($"FF14 Wiki：{step.WikiPage}");
                 ImGui.Unindent(28);
                 ImGui.Spacing();
             }
